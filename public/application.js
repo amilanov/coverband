@@ -185,4 +185,31 @@ $(document).ready(function() {
   $("#loading").fadeOut();
   $("#wrapper").show();
   $(".dataTables_filter input").focus();
+
+  const relevant = +Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(
+    ([...document.querySelectorAll('table.file_list tbody td:nth-child(7)')]
+      .map((node) => +node.innerHTML)
+      .reduce((cur, val) => {
+        return (cur ?? 0) + val;
+      }, 0) /
+      [...document.querySelectorAll('table.file_list tbody td:nth-child(5)')]
+        .map((node) => +node.innerHTML)
+        .reduce((cur, val) => {
+          return (cur ?? 0) + val;
+        }, 0)) *
+      100
+  );
+
+  var clone = document.querySelector('#Coverage h2').cloneNode(true);
+  clone.querySelector('.group_name').innerHTML = 'Relevant';
+  clone.querySelector('.covered_percent > *').innerHTML = relevant + '%';
+  clone.querySelector('.covered_strength').remove();
+  clone.innerHTML = clone.innerHTML
+    .replace('covered at', 'covered')
+    .replace(' hits/line)', ')')
+    .trim();
+  document.querySelector('#Coverage h2').insertAdjacentElement('afterend', clone);
 });
